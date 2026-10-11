@@ -15,7 +15,8 @@
     "lint": "eslint .",
     "test": "vitest run",
     "test:watch": "vitest",
-    "check": "npm run typecheck && npm run lint && npm run test && npm run build"
+    "check": "npm run typecheck && npm run lint && npm run test && npm run build",
+    "deploy": "npm run check && npx --yes wrangler@4.149.0 pages deploy --branch main"
   },
   "dependencies": {
     "@fontsource-variable/inter": "^5.3.0",
