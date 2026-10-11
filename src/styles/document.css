@@ -1,0 +1,469 @@
+/* ==========================================================================
+   Customer-facing quote document (live preview + print).
+   The PDF generator mirrors this layout (src/pdf/exportPdf.ts).
+   ========================================================================== */
+
+.qdoc {
+  --doc-ink: #17231c;
+  --doc-muted: #5f6b63;
+  --doc-rule: #e1e9e2;
+  --doc-soft: #f6f9f7;
+  position: relative;
+  background: #fff;
+  color: var(--doc-ink);
+  font-family: var(--font-doc);
+  font-size: 13px;
+  line-height: 1.5;
+  padding: 50px 56px 44px;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum', 'cv11';
+  overflow-wrap: anywhere;
+  text-align: left;
+}
+
+.qdoc--a4 {
+  min-height: 1123px;
+}
+
+.qdoc--letter {
+  min-height: 1056px;
+}
+
+.qdoc p,
+.qdoc h2,
+.qdoc h3,
+.qdoc dl,
+.qdoc dd {
+  margin: 0;
+}
+
+.qdoc__bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 6px;
+  background: var(--doc-brand);
+}
+
+.qdoc__sample {
+  display: inline-block;
+  margin: -18px 0 16px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: #fdf4de;
+  border: 1px solid #f0dba4;
+  color: #8a5a00;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.qdoc__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 32px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--doc-rule);
+}
+
+.qdoc__from {
+  min-width: 0;
+  max-width: 55%;
+}
+
+.qdoc__logo {
+  display: block;
+  max-height: 64px;
+  max-width: 200px;
+  object-fit: contain;
+  margin-bottom: 12px;
+}
+
+.qdoc__business {
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  margin-bottom: 3px !important;
+}
+
+.qdoc__muted {
+  color: var(--doc-muted);
+  font-size: 11.5px;
+}
+
+.qdoc__small {
+  font-size: 11px;
+}
+
+.qdoc__pre {
+  white-space: pre-line;
+}
+
+.qdoc__strong {
+  font-weight: 650;
+}
+
+.qdoc__heading {
+  text-align: right;
+  min-width: 200px;
+}
+
+.qdoc__doc-title {
+  font-size: 29px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  color: var(--doc-brand-ink);
+  margin-bottom: 12px !important;
+}
+
+.qdoc__meta {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.qdoc__meta div {
+  display: flex;
+  justify-content: flex-end;
+  gap: 14px;
+  font-size: 11.5px;
+}
+
+.qdoc__meta dt {
+  color: var(--doc-muted);
+}
+
+.qdoc__meta dd {
+  font-weight: 650;
+  min-width: 96px;
+}
+
+.qdoc__parties {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-top: 20px;
+}
+
+.qdoc__label {
+  font-size: 10px !important;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--doc-muted);
+  margin-bottom: 6px !important;
+}
+
+.qdoc__title {
+  margin-top: 26px !important;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  line-height: 1.25;
+}
+
+.qdoc__block {
+  margin-top: 18px;
+}
+
+.qdoc__empty {
+  margin-top: 22px !important;
+  padding: 18px;
+  border: 1px dashed var(--doc-rule);
+  border-radius: 6px;
+  color: var(--doc-muted);
+  text-align: center;
+}
+
+.qdoc__table {
+  width: 100%;
+  margin-top: 20px;
+  border-collapse: collapse;
+}
+
+.qdoc__table th {
+  padding: 9px 10px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--doc-muted);
+  text-align: left;
+  background: var(--doc-soft);
+  border-bottom: 2px solid var(--doc-brand);
+}
+
+.qdoc__table td {
+  padding: 11px 10px;
+  border-bottom: 1px solid #e8eee9;
+  vertical-align: top;
+}
+
+.qdoc__num {
+  text-align: right !important;
+  white-space: nowrap;
+}
+
+.qdoc__item {
+  display: block;
+  font-weight: 650;
+}
+
+.qdoc__item-desc {
+  display: block;
+  margin-top: 2px;
+  font-size: 12px;
+  color: var(--doc-muted);
+}
+
+.qdoc__item-note {
+  display: block;
+  margin-top: 3px;
+  font-size: 11px;
+  color: var(--doc-muted);
+  font-style: italic;
+}
+
+.qdoc__summary {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.qdoc__totals {
+  width: 330px;
+  max-width: 100%;
+}
+
+.qdoc__trow {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 16px;
+  padding: 4px 0;
+}
+
+.qdoc__trow dt {
+  color: var(--doc-muted);
+}
+
+.qdoc__trow dd {
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.qdoc__trow--subtotal dd {
+  font-weight: 700;
+}
+
+.qdoc__tnote {
+  display: block;
+  font-size: 11px;
+  color: #8b978f;
+}
+
+.qdoc__trow--total {
+  margin-top: 6px;
+  padding: 10px 12px;
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--doc-brand) 12%, white);
+  align-items: center;
+}
+
+.qdoc__trow--total dt {
+  color: var(--doc-ink);
+  font-size: 14.5px;
+  font-weight: 700;
+}
+
+.qdoc__trow--total dd {
+  font-size: 18px;
+  font-weight: 750;
+}
+
+.qdoc__trow--info {
+  font-size: 11.5px;
+}
+
+.qdoc__trow--info dd {
+  font-weight: 500;
+  color: var(--doc-muted);
+}
+
+.qdoc__deposit {
+  width: 330px;
+  max-width: 100%;
+  padding: 8px 12px;
+  border: 1px solid var(--doc-rule);
+  border-radius: 6px;
+  background: var(--doc-soft);
+}
+
+.qdoc__deposit div {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 3px 0;
+  font-size: 12px;
+}
+
+.qdoc__deposit dt {
+  color: var(--doc-muted);
+}
+
+.qdoc__deposit dd {
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.qdoc__optional {
+  margin-top: 26px;
+}
+
+.qdoc__optional .qdoc__table {
+  margin-top: 4px;
+}
+
+.qdoc__optional .qdoc__table th {
+  border-bottom: 1px dashed var(--doc-muted);
+  background: transparent;
+}
+
+.qdoc__optional > .qdoc__muted {
+  margin-top: 6px;
+}
+
+.qdoc__signature {
+  margin-top: 30px;
+}
+
+.qdoc__sign-fields {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 22px;
+  margin-top: 14px;
+}
+
+.qdoc__sign-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.qdoc__sign-line {
+  display: block;
+  height: 32px;
+  border-bottom: 1px solid var(--doc-ink);
+}
+
+.qdoc__footer {
+  margin-top: 34px;
+  padding-top: 12px;
+  border-top: 1px solid var(--doc-rule);
+  font-size: 11px;
+  color: var(--doc-muted);
+  white-space: pre-line;
+}
+
+/* ==========================================================================
+   Print
+   ========================================================================== */
+
+#print-root {
+  display: none;
+}
+
+/* Page margins and "Page X of Y" (margin boxes are supported in Chromium-based browsers). */
+@page {
+  margin: 14mm 14mm 16mm;
+
+  @bottom-right {
+    content: 'Page ' counter(page) ' of ' counter(pages);
+    font: 7.5pt 'Inter Variable', Inter, sans-serif;
+    color: #5f6b63;
+  }
+}
+
+/* Paper size follows the document (named pages; browsers without support use the print dialog's paper). */
+@page quote-a4 {
+  size: A4;
+}
+
+@page quote-letter {
+  size: letter;
+}
+
+#print-root .qdoc--a4 {
+  page: quote-a4;
+}
+
+#print-root .qdoc--letter {
+  page: quote-letter;
+}
+
+@media print {
+  html,
+  body {
+    background: #fff !important;
+  }
+
+  * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  body.has-print-doc > *:not(#print-root) {
+    display: none !important;
+  }
+
+  body.has-print-doc #print-root {
+    display: block;
+  }
+
+  #print-root .qdoc {
+    min-height: 0;
+    padding: 20px 0 0;
+    font-size: 12.5px;
+  }
+
+  #print-root .qdoc__bar {
+    height: 5px;
+  }
+
+  .qdoc__table thead {
+    display: table-header-group;
+  }
+
+  .qdoc__table tr,
+  .qdoc__summary,
+  .qdoc__keep,
+  .qdoc__signature,
+  .qdoc__header,
+  .qdoc__parties {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .qdoc__label {
+    break-after: avoid;
+    page-break-after: avoid;
+  }
+
+  /* Printing any other page: drop the app chrome. */
+  .sidebar,
+  .topbar,
+  .toast-stack,
+  .mobile-summary,
+  .editor-tabs,
+  .skip-link {
+    display: none !important;
+  }
+
+  .shell {
+    display: block;
+  }
+}
