@@ -2,6 +2,8 @@
 
 **Quote confidently. Know your costs. Protect your profit.**
 
+**Live:** https://trademaker.pages.dev
+
 TradeMaker is a browser-based quoting and job-profitability tool for independent tradespeople and small crews — pressure washers, painters, window cleaners and landscapers. It answers three questions before a quote goes out:
 
 1. **What should I charge the customer?**
@@ -86,9 +88,32 @@ To inspect generated PDFs, set `PDF_OUT` to an existing folder when running the 
 
 ## Deploying
 
-`npm run build` produces a fully static `dist/` folder with relative asset paths (`base: './'`). Upload it to any static host: Netlify, Vercel, Cloudflare Pages, GitHub Pages, S3 + CloudFront, or an nginx/Apache folder. There are no server routes. Navigation uses the URL hash, so no rewrite rules are needed.
+### Cloudflare Pages (current production)
 
-The production `index.html` includes a strict Content-Security-Policy meta tag: only the app's own scripts, styles, fonts and images, with no third-party or network connections. If your host sets its own CSP header, keep it at least as strict. After the first load, the app works without a network connection; the PDF engine is pre-loaded in the background.
+Production runs on Cloudflare Pages at **https://trademaker.pages.dev**: Cloudflare's own HTTPS domain, with HTTP redirected to HTTPS. The Pages project is `trademaker`, configured in [`wrangler.toml`](wrangler.toml), and `main` is the production branch.
+
+```bash
+npx wrangler login     # once per machine
+npm run deploy         # typecheck + lint + tests + build, then deploy dist/ to production
+```
+
+Each deploy also gets an immutable preview URL (e.g. `https://<hash>.trademaker.pages.dev`).
+
+[`public/_headers`](public/_headers) sends these security headers on every response:
+- A strict Content-Security-Policy: own origin only, no third parties, no framing.
+- HSTS, `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy: no-referrer`.
+- A locked-down `Permissions-Policy`, plus COOP/CORP.
+- Long-term immutable caching for the content-hashed files in `/assets/`.
+
+**Adding your own domain.** Open the Cloudflare dashboard → **Workers & Pages** → `trademaker` → **Custom domains** → **Set up a custom domain**. A subdomain such as `quotes.example.com` can be connected with a CNAME at any DNS provider. An apex domain (`example.com`) needs the domain's DNS on Cloudflare. Certificates are issued automatically.
+
+> This project uses classic Cloudflare Pages, created with `wrangler pages project create --force`, because it provides the `pages.dev` address. Newer wrangler versions otherwise route Pages commands to Workers, which serves from the account's `workers.dev` subdomain instead.
+
+### Any other static host
+
+`npm run build` produces a fully static `dist/` folder with relative asset paths (`base: './'`). Upload it to any static host: Netlify, Vercel, GitHub Pages, S3 + CloudFront, or an nginx/Apache folder. There are no server routes. Navigation uses the URL hash, so no rewrite rules are needed. Replicate the headers from `public/_headers` in your host's configuration.
+
+The production `index.html` also includes a Content-Security-Policy meta tag, so the policy applies even on hosts that don't send headers. After the first load, the app works without a network connection; the PDF engine is pre-loaded in the background.
 
 ## How the numbers are calculated
 
